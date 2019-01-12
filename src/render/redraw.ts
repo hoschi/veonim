@@ -6,6 +6,21 @@ import * as dispatch from '../messaging/dispatch'
 import { onRedraw } from '../core/master-control'
 import * as renderEvents from '../render/events'
 
+enum Direction {
+  Above,
+  Below,
+  Left,
+  Right,
+  BelowAndRight,
+  AboveAndLeft,
+  TopLeft,
+  BottomLeft,
+  Previous,
+}
+
+// so this file looks like "ugly" code but it's just
+// what we have to do to make javascript fast.
+
 let dummyData = new Float32Array()
 let state_cursorVisible = true
 
@@ -52,6 +67,38 @@ const win_pos = (e: any) => {
 const win_hide = (e: any) => {
   console.debug('win_hide', e)
   windows.hide(e.slice(1))
+}
+
+const win_move_cursor = (e: any) => {
+  console.debug('win_move_cursor', e)
+}
+
+const win_split = (e: any) => {
+  console.debug('win_split', e)
+}
+
+const win_move = (e: any) => {
+  console.debug('win_move', e)
+}
+
+const win_close = (e: any) => {
+  console.debug('win_close', e)
+}
+
+const win_exchange = (e: any) => {
+  console.debug('win_exchange', e)
+}
+
+const win_rotate = (e: any) => {
+  console.debug('win_rotate', e)
+}
+
+const win_resize_equal = (e: any) => {
+  console.debug('win_resize_equal', e)
+}
+
+const win_resize = (e: any) => {
+  console.debug('win_resize', e)
 }
 
 const grid_clear = ([ , [ gridId ] ]: any) => {
@@ -189,9 +236,11 @@ const tabline_update = ([ , [ curtab, tabs ] ]: any) => {
 }
 
 onRedraw(redrawEvents => {
+  console.log('redrawEvents', redrawEvents)
   // because of circular logic/infinite loop. cmdline_show updates UI, UI makes
   // a change in the cmdline, nvim sends redraw again. we cut that shit out
   // with coding and algorithms
+  // TODO: why does this happen? i must be doing something wrong
   if (renderEvents.doNotUpdateCmdlineIfSame(redrawEvents[0])) return
   const eventCount = redrawEvents.length
   let winUpdates = false
@@ -200,12 +249,24 @@ onRedraw(redrawEvents => {
     const ev = redrawEvents[ix]
     const e = ev[0]
 
-    // if statements ordered in wrender priority
+    // if statements ordered in wrender priority.
+    // "if" probably faster than doing Map lookups
     if (e === 'grid_line') grid_line(ev)
     else if (e === 'grid_scroll') grid_scroll(ev)
     else if (e === 'grid_cursor_goto') grid_cursor_goto(ev)
     else if (e === 'win_pos') (winUpdates = true, win_pos(ev))
     else if (e === 'win_hide') (winUpdates = true, win_hide(ev))
+
+    // ext_windows
+    else if (e === 'win_move_cursor') win_move_cursor(ev)
+    else if (e === 'win_split') win_split(ev)
+    else if (e === 'win_move') win_move(ev)
+    else if (e === 'win_close') win_close(ev)
+    else if (e === 'win_exchange') win_exchange(ev)
+    else if (e === 'win_rotate') win_rotate(ev)
+    else if (e === 'win_resize_equal') win_resize_equal(ev)
+    else if (e === 'win_resize') win_resize(ev)
+
     else if (e === 'grid_resize') (winUpdates = true, grid_resize(ev))
     else if (e === 'grid_clear') grid_clear(ev)
     else if (e === 'grid_destroy') grid_destroy(ev)

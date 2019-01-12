@@ -32,6 +32,7 @@ const vimOptions = {
   ext_messages: true,
   ext_multigrid: true,
   ext_hlstate: true,
+  // ext_windows: true,
 }
 
 const ids = {
