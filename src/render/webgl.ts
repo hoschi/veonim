@@ -20,7 +20,7 @@ export interface WebGLView {
 }
 
 const nutella = () => {
-  const foregroundGL = CreateWebGL({ alpha: false, preserveDrawingBuffer: true })
+  const foregroundGL = CreateWebGL({ alpha: true, preserveDrawingBuffer: true })
   const backgroundGL = CreateWebGL({ alpha: true, preserveDrawingBuffer: true })
 
   const textFGRenderer = TextFG(foregroundGL)
@@ -94,7 +94,7 @@ const nutella = () => {
         dataBuffer[ix] = it
         dataBuffer[ix + 1] = 2
         dataBuffer[ix + 2] = it
-        dataBuffer[ix + 3] = 22
+        dataBuffer[ix + 3] = 6
         it++
       }
 

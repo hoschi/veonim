@@ -19,7 +19,7 @@ const default_colors_set = (e: any) => {
     defaultColorsChanged = setDefaultColors(fg, bg, sp)
   }
 
-  if (!defaultColorsChanged) return
+  // if (!defaultColorsChanged) return
 
   const colorAtlas = generateColorLookupAtlas()
   windows.webgl.updateColorAtlas(colorAtlas)

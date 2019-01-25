@@ -32,6 +32,7 @@ export default (webgl: WebGL2) => {
     uniform vec2 ${v.cellPadding};
     uniform sampler2D ${v.colorAtlasTextureId};
 
+    out vec2 o_glyphPosition;
     out vec4 o_color;
 
     void main() {
@@ -42,6 +43,10 @@ export default (webgl: WebGL2) => {
       float posy = posFloat.y * -2.0 + 1.0;
       gl_Position = vec4(posx, posy, 0, 1);
 
+      vec2 glyphPixelPosition = vec2(${v.charIndex}, 0) * ${v.cellSize};
+      vec2 glyphVertex = glyphPixelPosition + ${v.quadVertex};
+      o_glyphPosition = glyphVertex / ${v.fontAtlasResolution};
+
       vec2 colorPosition = vec2(${v.hlid}, 2) / ${v.colorAtlasResolution};
       o_color = texture(${v.colorAtlasTextureId}, colorPosition);
     }
@@ -50,13 +55,15 @@ export default (webgl: WebGL2) => {
   program.setFragmentShader(v => `
     precision highp float;
 
+    in vec2 o_glyphPosition;
     in vec4 o_color;
     uniform sampler2D ${v.fontAtlasTextureId};
 
     out vec4 outColor;
 
     void main() {
-      outColor = o_color;
+      vec4 glyphColor = texture(${v.fontAtlasTextureId}, o_glyphPosition);
+      outColor = glyphColor * o_color;
     }
   `)
 

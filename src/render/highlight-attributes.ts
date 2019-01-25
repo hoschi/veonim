@@ -103,13 +103,13 @@ export const setDefaultColors = (fg: number, bg: number, sp: number) => {
   })
 
   // hlid 0 -> default highlight group
-  // highlights.set(instances.current, 0, {
-  //   foreground,
-  //   background,
-  //   special,
-  //   underline: false,
-  //   reverse: false,
-  // })
+  highlights.set(instances.current, 0, {
+    foreground,
+    background,
+    special,
+    underline: false,
+    reverse: false,
+  })
 
   return true
 }
@@ -192,6 +192,8 @@ export const generateColorLookupAtlas = () => {
     ui.fillStyle = hlgrp.foreground || deffg
     ui.fillRect(id, 1, 1, 1)
 
+    ui.fillStyle = 'pink'
+    ui.fillRect(id, 2, 1, 1)
     if (!hlgrp.underline) return
 
     const color = hlgrp.special || defaultColors.special
