@@ -32,7 +32,6 @@ export default (webgl: WebGL2) => {
     uniform vec2 ${v.cellPadding};
     uniform sampler2D ${v.colorAtlasTextureId};
 
-    out vec2 o_glyphPosition;
     out vec4 o_color;
 
     void main() {
@@ -43,11 +42,7 @@ export default (webgl: WebGL2) => {
       float posy = posFloat.y * -2.0 + 1.0;
       gl_Position = vec4(posx, posy, 0, 1);
 
-      vec2 glyphPixelPosition = vec2(${v.charIndex}, 0) * ${v.cellSize};
-      vec2 glyphVertex = glyphPixelPosition + ${v.quadVertex};
-      o_glyphPosition = glyphVertex / ${v.fontAtlasResolution};
-
-      vec2 colorPosition = vec2(${v.hlid}, 1) / ${v.colorAtlasResolution};
+      vec2 colorPosition = vec2(${v.hlid}, 2) / ${v.colorAtlasResolution};
       o_color = texture(${v.colorAtlasTextureId}, colorPosition);
     }
   `)
@@ -55,15 +50,13 @@ export default (webgl: WebGL2) => {
   program.setFragmentShader(v => `
     precision highp float;
 
-    in vec2 o_glyphPosition;
     in vec4 o_color;
     uniform sampler2D ${v.fontAtlasTextureId};
 
     out vec4 outColor;
 
     void main() {
-      vec4 glyphColor = texture(${v.fontAtlasTextureId}, o_glyphPosition);
-      outColor = glyphColor * o_color;
+      outColor = o_color;
     }
   `)
 
@@ -71,20 +64,23 @@ export default (webgl: WebGL2) => {
   program.use()
 
   // wait for roboto-mono to be loaded before we generate the initial font atlas
-  ;(document as any).fonts.ready.then(() => {
-    const fontAtlas = generateFontAtlas()
-    const fontAtlasWidth = Math.floor(fontAtlas.width / window.devicePixelRatio)
-    const fontAtlasHeight = Math.floor(fontAtlas.height / window.devicePixelRatio)
+  // ;(document as any).fonts.ready.then(() => {
+  //   const fontAtlas = generateFontAtlas()
+  //   const fontAtlasWidth = Math.floor(fontAtlas.width / window.devicePixelRatio)
+  //   const fontAtlasHeight = Math.floor(fontAtlas.height / window.devicePixelRatio)
 
-    webgl.loadCanvasTexture(fontAtlas, webgl.gl.TEXTURE0)
-    webgl.gl.uniform1i(program.vars.fontAtlasTextureId, 0)
-    webgl.gl.uniform2f(program.vars.fontAtlasResolution, fontAtlasWidth, fontAtlasHeight)
-  })
+  //   webgl.loadCanvasTexture(fontAtlas, webgl.gl.TEXTURE0)
+  //   webgl.gl.uniform1i(program.vars.fontAtlasTextureId, 0)
+  //   webgl.gl.uniform2f(program.vars.fontAtlasResolution, fontAtlasWidth, fontAtlasHeight)
+  // })
 
   const colorAtlas = getColorAtlas()
   webgl.loadCanvasTexture(colorAtlas, webgl.gl.TEXTURE1)
   webgl.gl.uniform1i(program.vars.colorAtlasTextureId, 1)
-  webgl.gl.uniform2f(program.vars.colorAtlasResolution, colorAtlas.width, colorAtlas.height)
+  const w = Math.floor(colorAtlas.width / window.devicePixelRatio)
+  const h = Math.floor(colorAtlas.height / window.devicePixelRatio)
+  console.log('color atlas res:', w, h, colorAtlas)
+  webgl.gl.uniform2f(program.vars.colorAtlasResolution, w, h)
 
   // total size of all pointers. chunk size that goes to shader
   const wrenderStride = 4 * Float32Array.BYTES_PER_ELEMENT
@@ -155,7 +151,8 @@ export default (webgl: WebGL2) => {
   }
 
   const render = (buffer: Float32Array, x: number, y: number, width: number, height: number) => {
-    readjustViewportMaybe(x, y, width, height)
+    console.warn('who dares enter my domain?', buffer)
+    // readjustViewportMaybe(x, y, width, height)
     wrenderBuffer.setData(buffer)
     webgl.gl.drawArraysInstanced(webgl.gl.TRIANGLES, 0, 6, buffer.length / 4)
   }
@@ -183,17 +180,21 @@ export default (webgl: WebGL2) => {
 
   const updateColorAtlas = (colorAtlas: HTMLCanvasElement) => {
     webgl.loadCanvasTexture(colorAtlas, webgl.gl.TEXTURE1)
-    webgl.gl.uniform2f(program.vars.colorAtlasResolution, colorAtlas.width, colorAtlas.height)
+  const w = Math.floor(colorAtlas.width / window.devicePixelRatio)
+  const h = Math.floor(colorAtlas.height / window.devicePixelRatio)
+  webgl.gl.uniform2f(program.vars.colorAtlasResolution, w, h)
+    console.log('color atlas res:', w, h, colorAtlas)
+    // webgl.gl.uniform2f(program.vars.colorAtlasResolution, colorAtlas.width, colorAtlas.height)
   }
 
   const clear = (x: number, y: number, width: number, height: number) => {
     readjustViewportMaybe(x, y, width, height)
-    webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
+    // webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
   }
 
   const clearAll = () => {
     readjustViewportMaybe(0, 0, webgl.canvasElement.clientWidth, webgl.canvasElement.clientHeight)
-    webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
+    // webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
   }
 
   return { clear, clearAll, render, resize, updateFontAtlas, updateColorAtlas, updateCellSize }

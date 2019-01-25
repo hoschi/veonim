@@ -103,13 +103,13 @@ export const setDefaultColors = (fg: number, bg: number, sp: number) => {
   })
 
   // hlid 0 -> default highlight group
-  highlights.set(instances.current, 0, {
-    foreground,
-    background,
-    special,
-    underline: false,
-    reverse: false,
-  })
+  // highlights.set(instances.current, 0, {
+  //   foreground,
+  //   background,
+  //   special,
+  //   underline: false,
+  //   reverse: false,
+  // })
 
   return true
 }
@@ -201,5 +201,62 @@ export const generateColorLookupAtlas = () => {
 
   return canvas
 }
+
+const blarg = document.createElement('div')
+Object.assign(blarg.style, {
+  height: '30px',
+  zIndex: 9999,
+  display: 'flex',
+  background: '#000'
+})
+document.body.appendChild(blarg)
+
+const blarg2 = document.createElement('div')
+Object.assign(blarg2.style, {
+  height: '30px',
+  zIndex: 9999,
+  display: 'flex',
+  background: '#000'
+})
+document.body.appendChild(blarg2)
+
+const blarg3 = document.createElement('div')
+Object.assign(blarg3.style, {
+  height: '30px',
+  zIndex: 9999,
+  display: 'flex',
+  background: '#000'
+})
+document.body.appendChild(blarg3)
+
+const mk = ([ r, g, b ]) => {
+
+  const { cell } = require('../core/workspace')
+    const slice = document.createElement('div')
+    Object.assign(slice.style, {
+      height: `${cell.height}px`,
+      width: `${cell.width}px`,
+      background: `rgb(${r}, ${g}, ${b})`,
+    })
+  return slice
+}
+
+window.b = () => {
+  for (let ff = 0; ff < 24; ff++) {
+    const d = ui.getImageData(ff, 0, 1, 1)
+    blarg.appendChild(mk(d.data))
+
+    const d2 = ui.getImageData(ff, 1, 1, 1)
+    blarg2.appendChild(mk(d2.data))
+
+    const d3 = ui.getImageData(ff, 2, 1, 1)
+    blarg3.appendChild(mk(d3.data))
+  }
+  window.d()
+}
+
+setTimeout(() => {
+  window.b()
+}, 2e3)
 
 export const getColorAtlas = () => canvas

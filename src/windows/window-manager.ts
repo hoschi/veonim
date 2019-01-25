@@ -149,8 +149,10 @@ export const pixelPosition = (row: number, col: number) => {
   return { x: 0, y: 0 }
 }
 
-webgl.backgroundElement.setAttribute('wat', 'webgl-background')
+// webgl.backgroundElement.setAttribute('wat', 'webgl-background')
 webgl.foregroundElement.setAttribute('wat', 'webgl-foreground')
+webgl.foregroundElement.setAttribute('id', 'lolumad')
+window.spector.captureCanvas(webgl.foregroundElement)
 
 Object.assign(webglContainer.style, {
   position: 'absolute',
@@ -158,7 +160,7 @@ Object.assign(webglContainer.style, {
   height: '100%',
   flex: 1,
   zIndex: 2,
-  background: 'var(--background)',
+  // background: 'var(--background)',
 })
 
 Object.assign(container.style, {
@@ -173,17 +175,17 @@ Object.assign(container.style, {
   background: 'none',
 })
 
-Object.assign(webgl.backgroundElement.style, {
-  position: 'absolute',
-  zIndex: 3,
-})
+// Object.assign(webgl.backgroundElement.style, {
+//   position: 'absolute',
+//   zIndex: 3,
+// })
 
 Object.assign(webgl.foregroundElement.style, {
   position: 'absolute',
   zIndex: 4,
 })
 
-webglContainer.appendChild(webgl.backgroundElement)
+// webglContainer.appendChild(webgl.backgroundElement)
 webglContainer.appendChild(webgl.foregroundElement)
 
 onElementResize(webglContainer, (w, h) => {

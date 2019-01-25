@@ -141,6 +141,7 @@ export default (webgl: WebGL2) => {
   }
 
   const render = (buffer: Float32Array, x: number, y: number, width: number, height: number) => {
+    console.log('wren BG')
     readjustViewportMaybe(x, y, width, height)
     wrenderBuffer.setData(buffer)
 
@@ -164,15 +165,15 @@ export default (webgl: WebGL2) => {
   const clear = (x: number, y: number, width: number, height: number) => {
     readjustViewportMaybe(x, y, width, height)
     const [ r, g, b ] = hexToRGB(colors.background)
-    webgl.gl.clearColor(r / 255, g / 255, b / 255, 1)
-    webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
+    // webgl.gl.clearColor(r / 255, g / 255, b / 255, 1)
+    // webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
   }
 
   const clearAll = () => {
     readjustViewportMaybe(0, 0, webgl.canvasElement.width, webgl.canvasElement.height)
     const [ r, g, b ] = hexToRGB(colors.background)
-    webgl.gl.clearColor(r / 255, g / 255, b / 255, 1)
-    webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
+    // webgl.gl.clearColor(r / 255, g / 255, b / 255, 1)
+    // webgl.gl.clear(webgl.gl.COLOR_BUFFER_BIT)
   }
 
   return { clear, clearAll, render, resize, updateColorAtlas, updateCellSize }

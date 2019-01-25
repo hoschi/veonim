@@ -20,14 +20,14 @@ export interface WebGLView {
 }
 
 const nutella = () => {
-  const foregroundGL = CreateWebGL({ alpha: true, preserveDrawingBuffer: true })
+  const foregroundGL = CreateWebGL({ alpha: false, preserveDrawingBuffer: true })
   const backgroundGL = CreateWebGL({ alpha: true, preserveDrawingBuffer: true })
 
   const textFGRenderer = TextFG(foregroundGL)
-  const textBGRenderer = TextBG(backgroundGL)
+  // const textBGRenderer = TextBG(backgroundGL)
 
   const resizeCanvas = (width: number, height: number) => {
-    textBGRenderer.resize(width, height)
+    // textBGRenderer.resize(width, height)
     textFGRenderer.resize(width, height)
   }
 
@@ -36,17 +36,17 @@ const nutella = () => {
   }
 
   const updateCellSize = () => {
-    textBGRenderer.updateCellSize()
+    // textBGRenderer.updateCellSize()
     textFGRenderer.updateCellSize()
   }
 
   const updateColorAtlas = (colorAtlas: HTMLCanvasElement) => {
-    textBGRenderer.updateColorAtlas(colorAtlas)
+    // textBGRenderer.updateColorAtlas(colorAtlas)
     textFGRenderer.updateColorAtlas(colorAtlas)
   }
 
   const clearAll = () => {
-    textBGRenderer.clearAll()
+    // textBGRenderer.clearAll()
     textFGRenderer.clearAll()
   }
 
@@ -81,22 +81,41 @@ const nutella = () => {
     }
 
     const render = (elements: number) => {
+      return
       const buffer = dataBuffer.subarray(0, elements)
       const { x, y, width, height } = viewport
-      textBGRenderer.render(buffer, x, y, width, height)
-      textFGRenderer.render(buffer, x, y, width, height)
+      // textBGRenderer.render(buffer, x, y, width, height)
+      // textFGRenderer.render(buffer, x, y, width, height)
     }
+
+    const debugRender = () => {
+      let it = 0
+      for (let ix = 0; ix < 100; ix+=4) {
+        dataBuffer[ix] = it
+        dataBuffer[ix + 1] = 2
+        dataBuffer[ix + 2] = it
+        dataBuffer[ix + 3] = 22
+        it++
+      }
+
+      console.log('debug:', dataBuffer.slice(0, 40))
+
+      const buf = dataBuffer.subarray(0, 400)
+      textFGRenderer.render(buf, 0, 0, 0, 0)
+    }
+
+    window.d = debugRender
 
     const renderGridBuffer = () => {
       const { x, y, width, height } = viewport
       const buffer = gridBuffer.getBuffer()
-      textBGRenderer.render(buffer, x, y, width, height)
-      textFGRenderer.render(buffer, x, y, width, height)
+      // textBGRenderer.render(buffer, x, y, width, height)
+      // textFGRenderer.render(buffer, x, y, width, height)
     }
 
     const clear = () => {
       const { x, y, width, height } = viewport
-      textBGRenderer.clear(x, y, width, height)
+      // textBGRenderer.clear(x, y, width, height)
       textFGRenderer.clear(x, y, width, height)
     }
 
@@ -106,7 +125,7 @@ const nutella = () => {
       gridBuffer.moveRegionUp(lines, top, bottom)
       const buffer = gridBuffer.getBuffer()
       const { x, y, width, height } = viewport
-      textBGRenderer.render(buffer, x, y, width, height)
+      // textBGRenderer.render(buffer, x, y, width, height)
       textFGRenderer.render(buffer, x, y, width, height)
     }
 
@@ -114,7 +133,7 @@ const nutella = () => {
       gridBuffer.moveRegionDown(lines, top, bottom)
       const buffer = gridBuffer.getBuffer()
       const { x, y, width, height } = viewport
-      textBGRenderer.render(buffer, x, y, width, height)
+      // textBGRenderer.render(buffer, x, y, width, height)
       textFGRenderer.render(buffer, x, y, width, height)
     }
 

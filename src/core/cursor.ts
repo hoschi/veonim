@@ -116,6 +116,7 @@ const updateCursorChar = (gridId: number, row: number, col: number) => {
 }
 
 export const moveCursor = (gridId: number, row: number, col: number) => {
+  return
   Object.assign(cursor, { row, col })
 
   // even if cursor(line) is hidden, we still need to update the positions.

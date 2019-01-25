@@ -167,12 +167,12 @@ const grid_line = (e: any) => {
   if (atlas) windows.webgl.updateFontAtlas(atlas)
 
   const gridCount = grids.length
-  for (let ix = 0; ix < gridCount; ix++) {
-    const gridId = grids[ix]
-    const win = windows.get(gridId)
-    const renderCount = gridRenderIndexes[gridId]
-    win.webgl.render(renderCount)
-  }
+  // for (let ix = 0; ix < gridCount; ix++) {
+  //   const gridId = grids[ix]
+  //   const win = windows.get(gridId)
+  //   const renderCount = gridRenderIndexes[gridId]
+  //   win.webgl.render(renderCount)
+  // }
 }
 
 const tabline_update = ([ , [ curtab, tabs ] ]: any) => {
