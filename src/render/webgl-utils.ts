@@ -88,7 +88,18 @@ const create = (options?: WebGLContextAttributes) => {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true)
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas)
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas)
+    gl.texImage2D(
+      gl.TEXTURE_2D, // target
+      0, // level
+      gl.RGBA, // internalformat
+      canvas.width, // width
+      canvas.height, // height
+      0, // border - must be 0
+      gl.RGBA, // format
+      gl.UNSIGNED_BYTE, // type
+      canvas,
+    )
   }
 
   const setupVertexArray = ({
