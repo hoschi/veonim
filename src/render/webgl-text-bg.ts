@@ -44,7 +44,7 @@ export default (webgl: WebGL2) => {
   `)
 
   program.setFragmentShader(() => `
-    precision highp float;
+    precision mediump float;
 
     in vec4 o_color;
     out vec4 outColor;

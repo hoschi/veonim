@@ -94,9 +94,9 @@ const nutella = () => {
       const totalol = amount * 4
       for (let ix = 0; ix < totalol; ix+=4) {
         dataBuffer[ix] = it // col
-        dataBuffer[ix + 1] = 2
+        dataBuffer[ix + 1] = 2 // row
         dataBuffer[ix + 2] = it // hlid
-        dataBuffer[ix + 3] = 6
+        dataBuffer[ix + 3] = 6 // charindex
         it++
       }
 

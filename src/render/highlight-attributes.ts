@@ -175,7 +175,7 @@ export const generateColorLookupAtlas = () => {
   const hlids = highlights.keys(instances.current)
   const size = Math.max(...hlids)
   // const size = highlights.subsize(instances.current)
-  canvas.width = size
+  canvas.width = size + 1
   canvas.height = 3
 
   const defaultColors = getCurrentDefaultColors()

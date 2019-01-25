@@ -47,13 +47,13 @@ export default (webgl: WebGL2) => {
       vec2 glyphVertex = glyphPixelPosition + ${v.quadVertex};
       o_glyphPosition = glyphVertex / ${v.fontAtlasResolution};
 
-      vec2 colorPosition = vec2(${v.hlid}, 2) / ${v.colorAtlasResolution};
+      vec2 colorPosition = vec2(${v.hlid} + 0.01, 1.0 + 0.01) / ${v.colorAtlasResolution};
       o_color = texture(${v.colorAtlasTextureId}, colorPosition);
     }
   `)
 
   program.setFragmentShader(v => `
-    precision highp float;
+    precision mediump float;
 
     in vec2 o_glyphPosition;
     in vec4 o_color;
@@ -85,10 +85,8 @@ export default (webgl: WebGL2) => {
   const colorAtlas = getColorAtlas()
   webgl.loadCanvasTexture(colorAtlas, webgl.gl.TEXTURE1)
   webgl.gl.uniform1i(program.vars.colorAtlasTextureId, 1)
-  const w = Math.floor(colorAtlas.width / window.devicePixelRatio)
-  const h = Math.floor(colorAtlas.height / window.devicePixelRatio)
-  console.log('color atlas res:', w, h, colorAtlas)
-  webgl.gl.uniform2f(program.vars.colorAtlasResolution, w, h)
+  console.log('color atlas res:', colorAtlas.width, colorAtlas.height)
+  webgl.gl.uniform2f(program.vars.colorAtlasResolution, colorAtlas.width, colorAtlas.height)
 
   // total size of all pointers. chunk size that goes to shader
   const wrenderStride = 4 * Float32Array.BYTES_PER_ELEMENT
@@ -188,11 +186,8 @@ export default (webgl: WebGL2) => {
 
   const updateColorAtlas = (colorAtlas: HTMLCanvasElement) => {
     webgl.loadCanvasTexture(colorAtlas, webgl.gl.TEXTURE1)
-  const w = Math.floor(colorAtlas.width / window.devicePixelRatio)
-  const h = Math.floor(colorAtlas.height / window.devicePixelRatio)
-  webgl.gl.uniform2f(program.vars.colorAtlasResolution, w, h)
-    console.log('color atlas res:', w, h, colorAtlas)
-    // webgl.gl.uniform2f(program.vars.colorAtlasResolution, colorAtlas.width, colorAtlas.height)
+    console.log('color atlas res:', colorAtlas.width, colorAtlas.height)
+    webgl.gl.uniform2f(program.vars.colorAtlasResolution, colorAtlas.width, colorAtlas.height)
   }
 
   const clear = (x: number, y: number, width: number, height: number) => {
