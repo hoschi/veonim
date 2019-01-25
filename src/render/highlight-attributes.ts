@@ -172,7 +172,9 @@ export const getHighlight = (id: number) => highlights.get(instances.current, id
 
 export const generateColorLookupAtlas = () => {
   // hlid are 0 indexed, but width starts at 1
-  const size = highlights.subsize(instances.current)
+  const hlids = highlights.keys(instances.current)
+  const size = Math.max(...hlids)
+  // const size = highlights.subsize(instances.current)
   canvas.width = size + 1
   canvas.height = 3
 
@@ -244,7 +246,7 @@ const mk = ([ r, g, b ]) => {
 }
 
 window.b = () => {
-  for (let ff = 0; ff < 24; ff++) {
+  for (let ff = 0; ff < 100; ff++) {
     const d = ui.getImageData(ff, 0, 1, 1)
     blarg.appendChild(mk(d.data))
 
@@ -253,6 +255,8 @@ window.b = () => {
 
     const d3 = ui.getImageData(ff, 2, 1, 1)
     blarg3.appendChild(mk(d3.data))
+
+    console.log(ff, d.data, d2.data, d3.data)
   }
   window.d()
 }

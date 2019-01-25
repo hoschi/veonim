@@ -90,17 +90,19 @@ const nutella = () => {
 
     const debugRender = () => {
       let it = 0
-      for (let ix = 0; ix < 100; ix+=4) {
-        dataBuffer[ix] = it
+      const amount = 100
+      const totalol = amount * 4
+      for (let ix = 0; ix < totalol; ix+=4) {
+        dataBuffer[ix] = it // col
         dataBuffer[ix + 1] = 2
-        dataBuffer[ix + 2] = it
+        dataBuffer[ix + 2] = it // hlid
         dataBuffer[ix + 3] = 6
         it++
       }
 
-      console.log('debug:', dataBuffer.slice(0, 40))
+      console.log('debug:', dataBuffer.slice(0, amount))
 
-      const buf = dataBuffer.subarray(0, 400)
+      const buf = dataBuffer.subarray(0, totalol)
       textFGRenderer.render(buf, 0, 0, 0, 0)
     }
 

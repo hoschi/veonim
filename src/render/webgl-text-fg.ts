@@ -64,6 +64,7 @@ export default (webgl: WebGL2) => {
     void main() {
       vec4 glyphColor = texture(${v.fontAtlasTextureId}, o_glyphPosition);
       outColor = glyphColor * o_color;
+      outColor = o_color;
     }
   `)
 
