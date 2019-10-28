@@ -155,6 +155,7 @@ export default () => {
 
   api.resizeWindow = (width, height) => {
     Object.assign(wininfo, { height, width })
+    console.log(`------Resized window ${wininfo.id}`, wininfo)
     webgl.resize(height, width)
   }
 
@@ -311,6 +312,15 @@ export default () => {
       return { x, y }
     },
   }
+
+  // Step1: resize grid after creation. IDK about the timing here so just wait a little bit
+  setTimeout(() => {
+    const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
+    console.log('-------- Step1: win', gridId, wininfo)
+    // TODO: reset to real id when it works. Added fixed 666 because I wonder where errors get logged
+    instanceAPI.nvim.tryGridResize(666, wininfo.width, 30)
+    // TODO: this should now trigger a nvim resize event, but it doesn't
+  }, 1500)
 
   return api
 }

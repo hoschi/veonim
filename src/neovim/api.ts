@@ -13,6 +13,7 @@ import { basename, dirname } from 'path'
 import { EventEmitter } from 'events'
 
 const prefix = {
+  // this turns camel case into snake case and prefixes it
   core: prefixWith(Prefixes.Core),
   buffer: prefixWith(Prefixes.Buffer),
   window: prefixWith(Prefixes.Window),
@@ -105,6 +106,12 @@ const onAction = (event: string, cb: GenericCallback) => {
   watchers.actions.on(event, cb)
   registeredEventActions.add(event)
   cmd(`let g:vn_cmd_completions .= "${event}\\n"`)
+}
+
+// Step4: use core API to send nvim_ui_try_resize_grid through prefix helper
+const uiTryResizeGrid = (grid: number, width: number, height: number) => {
+  console.log('-------- Step4:', grid, width, height)
+  api.core.uiTryResizeGrid(grid, width, height)
 }
 
 const highlightedIds = new Set<number>()
@@ -638,6 +645,7 @@ const exportAPI = { state, watchState, onStateChange, onStateValue,
   untilStateValue, cmd, cmdOut, expr, call, feedkeys, normal, callAtomic,
   onAction, getCurrentLine, jumpTo, systemAction, current, g, on,
   untilEvent, buffers, windows, tabs, options: readonlyOptions,
+  uiTryResizeGrid,
   Buffer: fromId.buffer, Window: fromId.window, Tabpage: fromId.tabpage,
   getKeymap, getColorByName, getCursorPosition, highlightSearchPattern,
   removeHighlightSearch, getOptionCurrentAndFuture, getVarCurrentAndFuture }

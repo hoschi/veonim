@@ -112,6 +112,7 @@ export const has = (gridId: number) => windows.has(superid(gridId))
 
 export const layout = () => {
   const wininfos = getInstanceWindows().map(win => ({ ...win.getWindowInfo() }))
+  // layout info to "styled" elements
   const { gridTemplateRows, gridTemplateColumns, windowGridInfo } = windowSizer(wininfos)
 
   Object.assign(container.style, { gridTemplateRows, gridTemplateColumns })

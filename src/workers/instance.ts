@@ -35,6 +35,11 @@ on.bufferSearch(async (file: string, query: string) => bufferSearch.fuzzy(file, 
 on.bufferSearchVisible(async (query: string) => bufferSearch.fuzzyVisible(query))
 on.nvimJumpTo((coords: HyperspaceCoordinates) => nvim.jumpTo(coords))
 on.nvimExpr(async (expr: string) => nvim.expr(expr))
+// Step3: on instance event, call nvim API
+on.nvimUiTryResizeGrid((grid: number, width: number, height: number) => {
+  console.log('-------- Step3:', grid, width, height)
+  nvim.uiTryResizeGrid(grid, width, height)
+})
 on.nvimFeedkeys((keys: string, mode: string) => nvim.feedkeys(keys, mode))
 on.nvimCall(async (name: string, args: any[]) => Reflect.get(nvim.call, name)(...args))
 on.nvimCommand(async (command: string) => nvim.cmd(command))

@@ -76,6 +76,7 @@ export default (wins: WindowInfo[]) => {
     }
   })
 
+  // is this the layouting of windows in the GUI?!
   return {
     gridTemplateRows,
     gridTemplateColumns,

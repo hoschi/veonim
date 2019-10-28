@@ -76,6 +76,7 @@ export interface Api {
   uiDetach(): void,
   uiTryResize(width: number, height: number): void,
   uiSetOption(name: string, value: any): void,
+  // interface already there
   uiTryResizeGrid(grid: number, width: number, height: number): void,
   command(command: string): void,
   getHlByName(name: string, rgb: boolean): Promise<object>,
