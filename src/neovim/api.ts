@@ -108,12 +108,6 @@ const onAction = (event: string, cb: GenericCallback) => {
   cmd(`let g:vn_cmd_completions .= "${event}\\n"`)
 }
 
-// Step4: use core API to send nvim_ui_try_resize_grid through prefix helper
-const uiTryResizeGrid = (grid: number, width: number, height: number) => {
-  console.log('-------- Step4:', grid, width, height)
-  api.core.uiTryResizeGrid(grid, width, height)
-}
-
 const highlightedIds = new Set<number>()
 
 const removeHighlightSearch = async (id: number, pattern?: string) => {
@@ -252,7 +246,7 @@ const buffers = {
   find: async (path: string) => {
     const buffers = await getNamedBuffers()
     // it appears that buffers name will have a fullpath, like
-    // `/Users/anna/${name}` so we will try to substring match 
+    // `/Users/anna/${name}` so we will try to substring match
     // the end of the name
     const found = buffers.find(b => b.name.endsWith(path)) || { buffer: dummy.buf }
     return found.buffer
@@ -649,7 +643,6 @@ const exportAPI = { state, watchState, onStateChange, onStateValue,
   untilStateValue, cmd, cmdOut, expr, call, feedkeys, normal, callAtomic,
   onAction, getCurrentLine, jumpTo, systemAction, current, g, on,
   untilEvent, buffers, windows, tabs, options: readonlyOptions,
-  uiTryResizeGrid,
   Buffer: fromId.buffer, Window: fromId.window, Tabpage: fromId.tabpage,
   getKeymap, getColorByName, getCursorPosition, highlightSearchPattern,
   removeHighlightSearch, getOptionCurrentAndFuture, getVarCurrentAndFuture }

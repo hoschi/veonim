@@ -7,6 +7,7 @@ import instanceAPI from '../core/instance-api'
 import { WebGLView } from '../render/webgl'
 import { cell } from '../core/workspace'
 import { makel } from '../ui/vanilla'
+import { resizeGrid } from '../core/master-control'
 
 export interface WindowInfo {
   id: string
@@ -317,8 +318,7 @@ export default () => {
   setTimeout(() => {
     const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
     console.log('-------- Step1: win', gridId, wininfo)
-    instanceAPI.nvim.tryGridResize(gridId, wininfo.width, 30)
-    // TODO: this should now trigger a nvim resize event, but it doesn't
+    resizeGrid(gridId, wininfo.width, 30)
   }, 1500)
 
   return api

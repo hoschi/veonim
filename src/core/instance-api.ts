@@ -135,11 +135,6 @@ const git = {
 const bufferSearch = (file: string, query: string) => getActiveInstance().request.bufferSearch(file, query)
 const bufferSearchVisible = (query: string) => getActiveInstance().request.bufferSearchVisible(query)
 
-// Step2: use active instance to put request for grid resize
-const nvimTryGridResize = (grid: number, width: number, height: number) => {
-  console.log('-------- Step2:', grid, width, height)
-  getActiveInstance().request.nvimUiTryResizeGrid(grid, width, height)
-}
 const nvimLoaded = (fn: (switchInstance: boolean) => void) => ee.on('nvim.load', fn)
 const nvimGetVar = (key: string) => getActiveInstance().request.nvimGetVar(key)
 const nvimCommand = (command: string) => getActiveInstance().call.nvimCommand(command)
@@ -220,7 +215,6 @@ const api = {
     jumpTo: nvimJumpTo,
     onLoad: nvimLoaded,
     feedkeys: nvimFeedkeys,
-    tryGridResize: nvimTryGridResize,
     getKeymap: nvimGetKeymap,
     saveCursor: nvimSaveCursor,
     getColorByName: nvimGetColorByName,
