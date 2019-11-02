@@ -317,8 +317,7 @@ export default () => {
   setTimeout(() => {
     const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
     console.log('-------- Step1: win', gridId, wininfo)
-    // TODO: reset to real id when it works. Added fixed 666 because I wonder where errors get logged
-    instanceAPI.nvim.tryGridResize(666, wininfo.width, 30)
+    instanceAPI.nvim.tryGridResize(gridId, wininfo.width, 30)
     // TODO: this should now trigger a nvim resize event, but it doesn't
   }, 1500)
 
