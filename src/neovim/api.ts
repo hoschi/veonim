@@ -414,6 +414,10 @@ onEvent('nvim_buf_lines_event', (args: any[]) => {
   })
 })
 
+onEvent('nvim_error_event', (event) => {
+  console.error('nvim_error_event', event)
+})
+
 refreshState()
 watchers.events.emit('bufLoad')
 
