@@ -19,67 +19,19 @@ const equalizeTo100 = (percentages: number[]) => {
   return items
 }
 
+// FIXME get real numbers
+const rowHeightInPx = 14;
+const colWidthInPx = 5;
+
 export default (wins: WindowInfo[]) => {
-  // TODO: should we use teh size (rows/cols) from grid 1?
-  const totalRows = size.rows - 1
-  const totalColumns = size.cols
-  const { vertical, horizontal } = getSplits(wins)
-
-  vertical.add(totalColumns)
-  horizontal.add(totalRows)
-
-  const yrows = [...horizontal].sort((a, b) => a - b)
-  const xcols = [...vertical].sort((a, b) => a - b)
-
-  const rr = yrows.reduce((res, curr, ix, arr) => {
-    if (ix === arr.length - 1) return res
-
-    const next = arr[ix + 1]
-    const diff = next - curr
-    const rowSize = <any>Math.round((diff / totalRows) * 100).toFixed(1) - 0
-    return [...res, rowSize]
-  }, [] as number[])
-
-  const cc = xcols.reduce((res, curr, ix, arr) => {
-    if (ix === arr.length - 1) return res
-
-    const next = arr[ix + 1]
-    const diff = next - curr
-    const colSize = <any>Math.round((diff / totalColumns) * 100).toFixed(1) - 0
-    return [...res, colSize]
-  }, [] as number[])
-
-  const gridTemplateRows = rr.length < 2 ? '100%' : rr.reduce((s, m) => s + m + '% ', '')
-  const gridTemplateColumns = cc.length < 2 ? '100%' : equalizeTo100(cc).reduce((s, m) => s + m + '% ', '')
-
   const windowsWithGridInfo = wins.map(w => ({
     ...w,
-    scol: {
-      start: w.col,
-      end: w.col + w.width === totalColumns ? w.col + w.width : w.col + w.width + 1,
-    },
-    srow: {
-      start: w.row,
-      end: w.row + w.height === totalRows ? w.row + w.height : w.row + w.height + 1,
-    }
-  })).map(w => {
-    const { srow, scol } = w
-    const rowStart = yrows.findIndex(within(srow.start, 2)) + 1
-    const rowEnd = yrows.findIndex(within(srow.end, 2)) + 1
-    const colStart = xcols.findIndex(within(scol.start, 2)) + 1
-    const colEnd = xcols.findIndex(within(scol.end, 2)) + 1
+    top: w.row * rowHeightInPx,
+    left: w.col * colWidthInPx
+  }))
 
-    return {
-      ...w,
-      gridColumn: `${colStart} / ${colEnd}`,
-      gridRow: `${rowStart} / ${rowEnd}`,
-    }
-  })
-
-  // is this the layouting of windows in the GUI?!
+  // return only windowGridInfo
   return {
-    gridTemplateRows,
-    gridTemplateColumns,
     windowGridInfo: windowsWithGridInfo,
   }
 }

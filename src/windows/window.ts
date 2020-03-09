@@ -195,6 +195,7 @@ export default () => {
   })
 
   api.applyGridStyle = ({ gridRow, gridColumn }) => {
+    // FIXME set width and height instead
     Object.assign(container.style, { gridColumn, gridRow })
   }
 

@@ -115,9 +115,11 @@ export const layout = () => {
   // layout info to "styled" elements
   const { gridTemplateRows, gridTemplateColumns, windowGridInfo } = windowSizer(wininfos)
 
+  // FIXME can be removed when container is just 100% width and 100% height of main window
   Object.assign(container.style, { gridTemplateRows, gridTemplateColumns })
 
   windowGridInfo.forEach(({ gridId, gridRow, gridColumn }) => {
+    // FIXME set width and height instead
     windows.get(gridId)!.applyGridStyle({ gridRow, gridColumn })
   })
 
