@@ -19,11 +19,6 @@ export interface WindowInfo {
   visible: boolean
 }
 
-interface GridStyle {
-  gridRow: string
-  gridColumn: string
-}
-
 interface Position {
   x: number
   y: number
@@ -71,7 +66,7 @@ export interface Window {
   cols: number
   getWindowInfo(): WindowInfo
   setWindowInfo(info: WindowInfo): void
-  applyGridStyle(gridStyle: GridStyle): void
+  applyGridStyle(info: WindowInfo): void
   refreshLayout(): void
   hide(): void
   maybeHide(): void
@@ -110,6 +105,7 @@ export default () => {
 
   const container = makel({
     flexFlow: 'column',
+    position: 'absolute',
     background: 'none',
     display: 'flex',
   })
@@ -194,9 +190,16 @@ export default () => {
     height: layout.height,
   })
 
-  api.applyGridStyle = ({ gridRow, gridColumn }) => {
-    // FIXME set width and height instead
-    Object.assign(container.style, { gridColumn, gridRow })
+  api.applyGridStyle = (info) => {
+    const { col, row, width, height } = info
+    const style = {
+      top: `${row * cell.height}px`,
+      left: `${col * cell.width}px`,
+      width: `${width * cell.width}px`,
+      height: `${height * cell.height }px`
+    }
+    console.log(info.gridId, info, style)
+    Object.assign(container.style, style)
   }
 
   api.hide = () => {
@@ -238,7 +241,7 @@ export default () => {
     webgl.layout(x + paddingX, y + paddingY, width, height)
 
     Object.assign(container.style, {
-      border: '1px solid var(--background-30)',
+      border: '1px solid white',
     }, edgeDetection(container))
   }
 
@@ -319,7 +322,7 @@ export default () => {
   setTimeout(() => {
     const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
     console.log('-------- Step1: win', gridId, wininfo)
-    resizeGrid(gridId, wininfo.width, 30)
+    resizeGrid(gridId, wininfo.width, 10)
   }, 1500)
 
   return api

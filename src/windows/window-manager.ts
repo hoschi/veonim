@@ -6,7 +6,6 @@ import CreateWebGLRenderer from '../render/webgl'
 import { onElementResize } from '../ui/vanilla'
 import * as workspace from '../core/workspace'
 import { throttle } from '../support/utils'
-import windowSizer from '../windows/sizer'
 import api from '../core/instance-api'
 
 export const size = { width: 0, height: 0 }
@@ -113,18 +112,13 @@ export const has = (gridId: number) => windows.has(superid(gridId))
 export const layout = () => {
   const wininfos = getInstanceWindows().map(win => ({ ...win.getWindowInfo() }))
   // layout info to "styled" elements
-  const { gridTemplateRows, gridTemplateColumns, windowGridInfo } = windowSizer(wininfos)
 
-  // FIXME can be removed when container is just 100% width and 100% height of main window
-  Object.assign(container.style, { gridTemplateRows, gridTemplateColumns })
-
-  windowGridInfo.forEach(({ gridId, gridRow, gridColumn }) => {
-    // FIXME set width and height instead
-    windows.get(gridId)!.applyGridStyle({ gridRow, gridColumn })
+  wininfos.forEach((info) => {
+    windows.get(info.gridId)!.applyGridStyle(info)
   })
 
   // wait for flex grid styles to be applied to all windows and trigger dom layout
-  windowGridInfo.forEach(({ gridId }) => windows.get(gridId)!.refreshLayout())
+  wininfos.forEach(({ gridId }) => windows.get(gridId)!.refreshLayout())
   refreshWebGLGrid()
 
   // cursorline width does not always get resized correctly after window
@@ -170,9 +164,6 @@ Object.assign(container.style, {
   height: '100%',
   flex: 1,
   zIndex: 5,
-  display: 'grid',
-  justifyItems: 'stretch',
-  alignItems: 'stretch',
   background: 'none',
 })
 
@@ -201,10 +192,6 @@ onElementResize(webglContainer, (w, h) => {
 onSwitchVim((id, lastId) => {
   getInstanceWindows(lastId).forEach(w => w.maybeHide())
   getInstanceWindows(id).forEach(w => w.maybeShow())
-  const wininfos = getInstanceWindows(id).map(w => ({ ...w.getWindowInfo() }))
-  const { gridTemplateRows, gridTemplateColumns } = windowSizer(wininfos)
-  Object.assign(container.style, { gridTemplateRows, gridTemplateColumns })
-
   // it's possible that the highlights may be different between nvim instances
   // even if they are using the same colorscheme. i have personally experienced
   // this, so we will force update the color atlas to make sure we have
