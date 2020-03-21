@@ -7,7 +7,7 @@ import instanceAPI from '../core/instance-api'
 import { WebGLView } from '../render/webgl'
 import { cell } from '../core/workspace'
 import { makel } from '../ui/vanilla'
-import { resizeGrid } from '../core/master-control'
+import {resizeGrid} from '../core/master-control'
 
 export interface WindowInfo {
   id: string
@@ -152,7 +152,7 @@ export default () => {
 
   api.resizeWindow = (width, height) => {
     Object.assign(wininfo, { height, width })
-    console.log(`------Resized window ${wininfo.id}`, wininfo)
+    console.log(`------Resized window ${wininfo.id}: width:${width} height:${height}`)
     webgl.resize(height, width)
   }
 
@@ -319,11 +319,12 @@ export default () => {
   }
 
   // Step1: resize grid after creation. IDK about the timing here so just wait a little bit
-  setTimeout(() => {
-    const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
-    console.log('-------- Step1: win', gridId, wininfo)
-    resizeGrid(gridId, wininfo.width, 10)
-  }, 1500)
+  // FIXME remove me
+  //setTimeout(() => {
+    //const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
+    //console.log('-------- Step1: win', gridId, wininfo)
+    //resizeGrid(gridId, wininfo.width, 10)
+  //}, 1500)
 
   return api
 }
