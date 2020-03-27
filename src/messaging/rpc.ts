@@ -46,9 +46,15 @@ export default (send: (data: any[]) => void): NeovimRPCAPI => {
     pendingRequests.delete(id)
   }
 
-  const onNotification = (method: string, args: any[]) => method === 'redraw'
-    ? onRedrawFn(args)
-    : watchers.emit(method, args)
+  const onNotification = (method: string, args: any[]) => {
+    if (method === 'nvim_error_event') {
+      console.error('nvim error', ...args)
+      return;
+    }
+    return method === 'redraw'
+        ? onRedrawFn(args)
+        : watchers.emit(method, args)
+  }
 
   const api = {} as NeovimRPC
   api.request = (name, args) => {

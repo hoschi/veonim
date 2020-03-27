@@ -13,6 +13,7 @@ import { basename, dirname } from 'path'
 import { EventEmitter } from 'events'
 
 const prefix = {
+  // this turns camel case into snake case and prefixes it
   core: prefixWith(Prefixes.Core),
   buffer: prefixWith(Prefixes.Buffer),
   window: prefixWith(Prefixes.Window),
@@ -245,7 +246,7 @@ const buffers = {
   find: async (path: string) => {
     const buffers = await getNamedBuffers()
     // it appears that buffers name will have a fullpath, like
-    // `/Users/anna/${name}` so we will try to substring match 
+    // `/Users/anna/${name}` so we will try to substring match
     // the end of the name
     const found = buffers.find(b => b.name.endsWith(path)) || { buffer: dummy.buf }
     return found.buffer
@@ -405,6 +406,10 @@ onEvent('nvim_buf_lines_event', (args: any[]) => {
     lineData,
     more,
   })
+})
+
+onEvent('nvim_error_event', (event) => {
+  console.error('nvim_error_event', event)
 })
 
 refreshState()

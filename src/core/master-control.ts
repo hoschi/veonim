@@ -24,7 +24,7 @@ interface NewVimResponse {
   path: string,
 }
 
-const vimOptions = {
+let vimOptions : any = {
   ext_popupmenu: true,
   ext_tabline: true,
   ext_wildmenu: true,
@@ -33,6 +33,12 @@ const vimOptions = {
   ext_multigrid: true,
   ext_hlstate: true,
 }
+
+if (process.env.NVIM_DEV) {
+  vimOptions.ext_windows = true
+}
+// FIXME remove me
+console.log('vim options', vimOptions)
 
 const ids = {
   vim: ID(),
@@ -132,6 +138,13 @@ export const onExit = (fn: ExitFn) => { onExitFn = fn }
 export const onRedraw = (fn: RedrawFn) => onEvent('redraw', fn)
 export const input = (keys: string) => api.input(keys)
 export const getMode = () => req.getMode() as Promise<{ mode: string, blocking: boolean }>
+
+export const resizeGrid = (grid: number, width: number, height: number) => {
+  if (ids.activeVim > -1) {
+    console.log('---------- Step X')
+    api.uiTryResizeGrid(grid, width, height)
+  }
+}
 
 export const resize = (width: number, height: number) => {
   merge(clientSize, { width, height })

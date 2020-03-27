@@ -6,7 +6,6 @@ import CreateWebGLRenderer from '../render/webgl'
 import { onElementResize } from '../ui/vanilla'
 import * as workspace from '../core/workspace'
 import { throttle } from '../support/utils'
-import windowSizer from '../windows/sizer'
 import api from '../core/instance-api'
 
 export const size = { width: 0, height: 0 }
@@ -50,6 +49,10 @@ export const getActive = () => {
 export const set = (id: number, gridId: number, row: number, col: number, width: number, height: number) => {
   const wid = superid(id)
   const gid = superid(gridId)
+  if (!windows.get(gid)) {
+    console.log(`--- window with id "${gid}" doesn't exist, creating one`)
+  }
+
   const win = windows.get(gid) || CreateWindow()
   win.setWindowInfo({ id: wid, gridId: gid, row, col, width, height, visible: true })
 
@@ -65,10 +68,14 @@ export const set = (id: number, gridId: number, row: number, col: number, width:
   // if (windowPosition && windowExistsAtPosition(wid, row, col)) return invalidWindows.add(gid)
 
   // behavior 2: receive "grid_resize" events (gridId > 1) but no followup "win_pos" events
-  if (id < 0) return invalidWindows.add(gid)
+  if (id < 0) {
+    console.log('---I--- set invalid win', gridId);
+    return invalidWindows.add(gid)
+  }
 
   container.appendChild(win.element)
   invalidWindows.delete(gid)
+  console.log('---I--- delete', gridId);
 }
 
 // i made the assumption that a grid_resize event was always going to follow up
@@ -112,16 +119,14 @@ export const has = (gridId: number) => windows.has(superid(gridId))
 
 export const layout = () => {
   const wininfos = getInstanceWindows().map(win => ({ ...win.getWindowInfo() }))
-  const { gridTemplateRows, gridTemplateColumns, windowGridInfo } = windowSizer(wininfos)
+  // layout info to "styled" elements
 
-  Object.assign(container.style, { gridTemplateRows, gridTemplateColumns })
-
-  windowGridInfo.forEach(({ gridId, gridRow, gridColumn }) => {
-    windows.get(gridId)!.applyGridStyle({ gridRow, gridColumn })
+  wininfos.forEach((info) => {
+    windows.get(info.gridId)!.applyGridStyle(info)
   })
 
   // wait for flex grid styles to be applied to all windows and trigger dom layout
-  windowGridInfo.forEach(({ gridId }) => windows.get(gridId)!.refreshLayout())
+  wininfos.forEach(({ gridId }) => windows.get(gridId)!.refreshLayout())
   refreshWebGLGrid()
 
   // cursorline width does not always get resized correctly after window
@@ -167,9 +172,6 @@ Object.assign(container.style, {
   height: '100%',
   flex: 1,
   zIndex: 5,
-  display: 'grid',
-  justifyItems: 'stretch',
-  alignItems: 'stretch',
   background: 'none',
 })
 
@@ -198,10 +200,6 @@ onElementResize(webglContainer, (w, h) => {
 onSwitchVim((id, lastId) => {
   getInstanceWindows(lastId).forEach(w => w.maybeHide())
   getInstanceWindows(id).forEach(w => w.maybeShow())
-  const wininfos = getInstanceWindows(id).map(w => ({ ...w.getWindowInfo() }))
-  const { gridTemplateRows, gridTemplateColumns } = windowSizer(wininfos)
-  Object.assign(container.style, { gridTemplateRows, gridTemplateColumns })
-
   // it's possible that the highlights may be different between nvim instances
   // even if they are using the same colorscheme. i have personally experienced
   // this, so we will force update the color atlas to make sure we have

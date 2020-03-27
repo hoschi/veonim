@@ -7,6 +7,7 @@ import instanceAPI from '../core/instance-api'
 import { WebGLView } from '../render/webgl'
 import { cell } from '../core/workspace'
 import { makel } from '../ui/vanilla'
+import {resizeGrid} from '../core/master-control'
 
 export interface WindowInfo {
   id: string
@@ -16,11 +17,6 @@ export interface WindowInfo {
   width: number
   height: number
   visible: boolean
-}
-
-interface GridStyle {
-  gridRow: string
-  gridColumn: string
 }
 
 interface Position {
@@ -70,7 +66,7 @@ export interface Window {
   cols: number
   getWindowInfo(): WindowInfo
   setWindowInfo(info: WindowInfo): void
-  applyGridStyle(gridStyle: GridStyle): void
+  applyGridStyle(info: WindowInfo): void
   refreshLayout(): void
   hide(): void
   maybeHide(): void
@@ -109,6 +105,7 @@ export default () => {
 
   const container = makel({
     flexFlow: 'column',
+    position: 'absolute',
     background: 'none',
     display: 'flex',
   })
@@ -155,6 +152,7 @@ export default () => {
 
   api.resizeWindow = (width, height) => {
     Object.assign(wininfo, { height, width })
+    console.log(`------Resized window ${wininfo.id}: width:${width} height:${height}`)
     webgl.resize(height, width)
   }
 
@@ -192,8 +190,16 @@ export default () => {
     height: layout.height,
   })
 
-  api.applyGridStyle = ({ gridRow, gridColumn }) => {
-    Object.assign(container.style, { gridColumn, gridRow })
+  api.applyGridStyle = (info) => {
+    const { col, row, width, height } = info
+    const style = {
+      top: `${row * cell.height}px`,
+      left: `${col * cell.width}px`,
+      width: `${width * cell.width}px`,
+      height: `${height * cell.height }px`
+    }
+    console.log(info.gridId, info, style)
+    Object.assign(container.style, style)
   }
 
   api.hide = () => {
@@ -235,7 +241,7 @@ export default () => {
     webgl.layout(x + paddingX, y + paddingY, width, height)
 
     Object.assign(container.style, {
-      border: '1px solid var(--background-30)',
+      border: '1px solid white',
     }, edgeDetection(container))
   }
 
@@ -311,6 +317,14 @@ export default () => {
       return { x, y }
     },
   }
+
+  // Step1: resize grid after creation. IDK about the timing here so just wait a little bit
+  // FIXME remove me
+  //setTimeout(() => {
+    //const gridId = parseInt(wininfo.gridId.split('-')[1], 10)
+    //console.log('-------- Step1: win', gridId, wininfo)
+    //resizeGrid(gridId, wininfo.width, 10)
+  //}, 1500)
 
   return api
 }

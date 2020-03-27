@@ -3,7 +3,7 @@ import { getCharIndex, getUpdatedFontAtlasMaybe } from '../render/font-texture-a
 import { moveCursor, hideCursor, showCursor, updateCursorChar } from '../core/cursor'
 import * as windows from '../windows/window-manager'
 import * as dispatch from '../messaging/dispatch'
-import { onRedraw } from '../core/master-control'
+import { onRedraw, resizeGrid } from '../core/master-control'
 import * as renderEvents from '../render/events'
 
 let dummyData = new Float32Array()
@@ -42,8 +42,46 @@ const win_pos = (e: any) => {
 
   for (let ix = 1; ix < count; ix++) {
     const [ gridId, { id: windowId }, row, col, width, height ] = e[ix]
+    console.log(`------- win_pos   gridId:${gridId}, windowId:${windowId}, row:${row}, col:${col}, width:${width}, height:${height} `)
     windows.set(windowId, gridId, row, col, width, height)
   }
+}
+
+const win_split = (e: any) => {
+  const count = e.length
+
+  for (let ix = 1; ix < count; ix++) {
+    // FIXME take flags into account!
+    const [ , , windowId, gridId, ] = e[ix]
+    console.log(`------- win_split  windowId:${windowId}, gridId:${gridId}`)
+    // FIXME set default widh, height?!
+    // FIXME set for debugging
+    windows.set(windowId, gridId, 0, 0, 100, 10)
+    resizeGrid(gridId, 100, 10)
+  }
+}
+
+const win_resize = (e: any) => {
+  const count = e.length
+
+  for (let ix = 1; ix < count; ix++) {
+    // FIXME is this really nothing other than grid_resize?!
+    const [ winId, gridId, width, height ] = e[ix]
+    if (gridId === 1) continue
+    // grid events show up before win events
+    console.log(`------- win_resize  winId:${winId}, gridId:${gridId}, width:${width}, height:${height}`)
+    if (!windows.has(gridId)) {
+      console.log(`---I--- set fake win (win_resize) ${gridId}`);
+      windows.set(-1, gridId, -1, -1, width, height)
+    }
+    windows.get(gridId).resizeWindow(width, height)
+
+    //resizeGrid(gridId, width, 10)
+  }
+}
+
+const newGridEvent = (e: any) => {
+  console.log("---NEW---", e[0], e)
 }
 
 const win_hide = (e: any) => {
@@ -70,8 +108,16 @@ const grid_resize = (e: any) => {
   for (let ix = 1; ix < count; ix++) {
     const [ gridId, width, height ] = e[ix]
     if (gridId === 1) continue
+    if (width === 0 && height === 0) {
+      console.log(`------- grid_resize  gridId:${gridId} IGNORED`)
+      return
+    }
+    console.log(`------- grid_resize  gridId:${gridId}, width:${width}, height:${height}`)
     // grid events show up before win events
-    if (!windows.has(gridId)) windows.set(-1, gridId, -1, -1, width, height)
+    if (!windows.has(gridId)) {
+      console.log(`---I--- set fake win ${gridId}`);
+      windows.set(-1, gridId, -1, -1, width, height)
+    }
     windows.get(gridId).resizeWindow(width, height)
   }
 }
@@ -193,6 +239,10 @@ onRedraw(redrawEvents => {
     const ev = redrawEvents[ix]
     const e = ev[0]
 
+    if (!e.startsWith('hl_')) {
+      console.log('redraw event', e)
+    }
+
     // if statements ordered in wrender priority
     if (e === 'grid_line') grid_line(ev)
     else if (e === 'grid_scroll') grid_scroll(ev)
@@ -219,6 +269,14 @@ onRedraw(redrawEvents => {
     else if (e === 'wildmenu_hide') renderEvents.wildmenu_hide()
     else if (e.startsWith('msg_')) messageEvents.push(ev)
     else if (e === 'set_title') renderEvents.set_title(ev)
+    else if (e === 'win_move_cursor') newGridEvent(ev)
+    else if (e === 'win_split') win_split(ev)
+    else if (e === 'win_move') newGridEvent(ev)
+    else if (e === 'win_close') newGridEvent(ev)
+    else if (e === 'win_exchange') newGridEvent(ev)
+    else if (e === 'win_rotate') newGridEvent(ev)
+    else if (e === 'win_resize_equal') newGridEvent(ev)
+    else if (e === 'win_resize') win_resize(ev)
   }
 
   // we queue the message events because we are interested to know
